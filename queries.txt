@@ -1,0 +1,630 @@
+
+###
+### SELECT
+###
+
+Basic SELECT query syntax.
+
+SELECT column1, column2, ... FROM table_name
+
+
+SELECT all columns from a table syntax.
+
+SELECT * FROM table_name
+
+
+SQL is case insensitive but by convention we write SQL keywords in upper case.
+
+Using * in a select statement with many columns is not the best practice - we can select a lot of data. It also creates database traffict. Usually we select specific data. We will use it here a lot but just for learning.
+
+
+Select actors from dvdrental database.
+
+SELECT * FROM actor;
+
+
+Select actors first and last names.
+
+SELECT first_name, last_name FROM actor;
+
+
+Select customer first name, last name and email address.
+
+SELECT first_name, last_name, email FROM customer;
+
+
+You can write queries in multiple lines. It reads them as one until it reaches the semicolon. You can start new line for each SQL keyword.
+
+SELECT first_name, last_name, email 
+FROM customer;
+
+
+
+
+###
+### SELECT DISTINCT
+###
+
+Table can contain duplicates values e.g. duplicates dates. 
+
+SELECT DISTINCT will select omly unique elements.
+
+SELECT DISTINCT column_1, column_2
+FROM table_name;
+
+
+Select all the distinct years the movie a movie was published in.
+
+SELECT DISTINCT release_year FROM film;
+
+
+We want to know how many rental rates are there in the rental company.
+
+SELECT DISTINCT rental_rate FROM film;
+
+We see that there are only three rental rates.
+
+
+Check what movie rating we have in the database.
+
+SELECT DISTINCT rating from film;
+
+
+
+
+###
+### SELECT WHERE
+### 
+
+WHERE is used when we want to query just particular rows from a table.
+
+
+Basic syntax.
+
+SELECT column_1, column_2, column_n
+FROM table_name
+WHERE conditions;
+
+
+SELECT WHERE statements.
+= Equal
+> Greater than
+< Less than
+>= Greater than or equal
+<= Less than or equal
+!= Not equal
+AND Logical and
+OR Logical or
+
+
+We want to get all customers first and last names whose first names are Jamie.
+
+SELECT first_name, last_name 
+FROM customer 
+WHERE first_name = 'Jamie'; # single quotes!
+
+
+We want to get all customers first and last names whose first names are Jamie 
+and whose last name is Rice
+
+SELECT first_name, last_name 
+FROM customer
+WHERE first_name = 'Jamie' AND last_name = 'Rice';
+
+
+Who paid the rental with amount of either less than 1USD or greater than 8 USD.
+SELECT customer_id, amount, payment_date 
+FROM payment 
+WHERE amount <= 1 OR amount >= 8;
+
+
+Get all columns for customers with first name "Jared"
+
+SELECT * FROM customer WHERE first_name = 'Jared'
+
+
+Get email column for customers with first name "Jared"
+
+SELECT email FROM customer WHERE first_name = 'Jared'
+
+
+Select payments of less then or equal to 7.99.
+SELECT * FROM payment WHERE amount = 7.99;
+
+
+Select payments of 7.99.
+SELECT * FROM payment WHERE amount <= 7.99;
+
+
+Select payments amound and date where the amout is 4.99 or 1.99.
+SELECT amount, payment_date FROM payment
+WHERE amount = 4.99 OR amount = 1.99
+
+
+A customer wants to know that the movie "Outlaw Hanky" is about (the description).
+
+SELECT description FROM film
+WHERE title = 'Outlaw Hanky';
+
+
+A customer wants to get the email for Nancy Thoma.
+SELECT email FROM customer 
+WHERE first_name = 'Nancy' AND last_name = 'Thomas'
+
+
+A customer is late on their return. I know their address is "259 Ipoh Drive". I want to call them to let them know! Can you get me the phone number for the person who lives at "259 Ipoh Drive"?
+
+
+###
+### COUNT
+###
+
+The COUNT function returs the number of input rows that match a specific condition of a query.
+
+
+COUNT syntax.
+SELECT COUNT(*) FROM table;
+
+COUNT(*) returns the number of rows returned by a SELECT clause.
+
+When you apply the COUNT(*) to the entire table, PostgreSQL scans table sequentially.
+
+
+You can also specify a specific column count for readibility.
+
+SELECT COUNT(column) FROM table;
+
+COUNT(column) returns the number of rows returned by a SELECT clause.
+
+It does not consider null values in the column.
+
+
+We can count number of distinct values.
+
+SELECT COUNT(DISTINCT column) FROM table;
+
+
+Let's get the number of transactions in the payment table.
+
+SELECT COUNT(amount) FROM payment;
+
+
+Let's get number of unique amounts in payment table.
+
+SELECT COUNT(DISTINCT amount) FROM payment # !!!!!
+
+or 
+
+SELECT COUNT(DISTINCT(amount)) FROM payment # !!!!!
+
+
+
+###
+### LIMIT
+###
+
+Limit allows you to limit the number of rows you get back after a query.
+
+Useful when wanting to get all columns but no all rows.
+
+Goes at the end of a query. 
+
+
+What are the columns in customer table.
+
+SELECT * FROM customer LIMIT 5
+
+This limits traffic for preview queries - like Pandas head function.
+
+
+
+###
+### ORDER BY
+###
+
+When you query data from a table, PostgreSQL returns the rows in the order that they were inserted into the table.
+
+In order to sort the result set, you use the ORDER BY clause in the SELECT statement.
+
+The ORDER BY clause allows you to sort the rows returned from the SELECT statement in ascending or descending order based on criteria specified.
+
+
+ORDER BY syntax.
+
+SELECT column_1, column_2
+FROM table_name
+ORDER BY column_1 ASC / DESC;
+
+Specify the columns that you want to sort in the ORDER BY clause. If you sort the result set by multiple columns, use a comma to separate beween two columns.
+
+Use ASC to sort the result set in ascending order and DESC to sort the result set in descending order.
+
+If you leave it blank, the ORDER BY clause will use ASC by default.
+
+
+Get customers first and last name sorted by first name in ascending order.
+
+SELECT first_name, last_name 
+FROM customer 
+ORDER BY first_name ASC;
+
+
+Sort customers by last name in descending order.
+
+SELECT first_name, last_name
+FROM customer
+ORDER BY last_name DESC;
+
+
+Sort the customers by first name in the ascending order first and then sort the sorted result set by the last name in descending order.
+
+SELECT first_name, last_name 
+FROM customer
+ORDER BY first_name ASC, last_name DESC
+
+
+PostgreSQL allows to sort and order by columns even if they're not seleted.
+
+Let's sort by the last name but we select only first name.
+
+SELECT first_name 
+FROM customer
+ORDER BY last_name ASC
+
+This may not be allowed in other database engines.
+
+Try to sort only on the columns that appear in the SELECT clause.
+
+SELECT first_name, last_name 
+FROM customer
+ORDER BY last_name ASC
+
+
+Get the customer ID number for the top 10 highest payment amount.
+
+SELECT payment_id, amount # amount is not needed but it is a good practice
+FROM payment 
+ORDER BY amount DESC
+LIMIT 10;
+
+
+Get the titles of the movies with film ids 1-5.
+
+SELECT film_id, title
+FROM film
+ORDER by film_id ASC
+LIMIT 5
+
+
+###
+### BETWEEN statement 
+### 
+
+We use the between operator to match a value against a range of values.
+
+value BETWEEN low AND high;
+
+We can rewrite it to following form.
+
+value >= low and value <= high;
+
+Between is shorter form.
+
+
+If we want to check if a value is out of a range, we use the NOT BETWEEN operator as follows.
+
+value NOT BETWEEN low AND high;
+
+Rewritten as this.
+
+value < low or value > high;
+
+
+Select payments ids and payment amount between 8 and 9$.
+
+SELECT customer_id, amount FROM payment
+WHERE amount BETWEEN 8 AND 9;
+
+
+Select payments ids and payment amount not between 8 and 9$.
+
+SELECT customer_id, amount FROM payment
+WHERE amount NOT BETWEEN 8 AND 9
+
+
+Check value against the ranges of dates.
+
+SELECT customer_id, amount, payment_date FROM payment
+WHERE payment_date BETWEEN '2007-02-15' AND '2007-02-20';
+
+
+
+###
+### IN 
+###
+
+Use the IN operator with the WHERE clause to check if a value matches any value in a list of values.
+
+The syntax of the IN operator is as follows.
+
+value IN (value1, values2, ...)
+ 
+
+The expression returns true if the value matches any value in the list.
+
+
+The list of values is not limited to a list of number or strings but also a result set of a SELECT statement (subquery!).
+
+value IN (SELECT value FROM tbl_name)
+
+
+Like with BETWEEN you can use NOT to adjust an IN statement (NOT IN).
+
+
+Get rental information for customer ID one and two.
+
+SELECT * FROM rental WHERE customer_id IN (1, 2) 
+
+SELECT * FROM rental WHERE customer_id NOT IN (1, 2) 
+
+So using IN we can instead of specifying range of values specify exact values we want to get.
+
+It is like multiple equal statement.
+
+SELECT * FROM rental WHERE customer_id = 1 OR customer_id = 2
+
+
+Select payments where amount is 7.99 and 8.99.
+
+SELECT * FROM payment WHERE amount IN(7.99, 8.99)
+
+
+
+###
+### LIKE
+###
+
+LIKE statement matches the given pattern (pattern matching) to element's value.
+
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE 'Jen%'
+
+
+You can construct a pattern by combining a string with wildcard characters and use the LIKE or NOT LIKE operator to find the matches.
+
+% - matches any sequence
+_ - matches any single character
+
+It is case sensitive.
+
+
+Find all names matching first name "Jen" that manager remembers.
+
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE 'Jen%'
+
+
+Ending with y.
+
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE '%y'
+
+
+With er in the name.
+
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE '%er%'
+
+
+Find all names matching first name with "her" after first character.
+
+SELECT first_name, last_name
+FROM customer
+WHERE first_name LIKE '_her%'
+
+
+
+
+
+###
+### Aggregate functions MIN MAX AVG SUM
+### 
+
+Aggregate functions take series of data and combine it into a single value.
+
+Aggregate functions are used a lot with a groupby statement - here we use them alone.
+
+
+Get average amount paid.
+
+SELECT AVG(amount) FROM payment
+
+
+Get average amount paid with two decimal places.
+
+SELECT ROUND(AVG(amount), 2) FROM payment
+
+
+
+Get min amount paid.
+
+SELECT MIN(amount) FROM payment
+
+
+
+Get max amount paid.
+
+SELECT MAX(amount) FROM payment
+
+
+
+Get sum amount paid.
+
+SELECT SUM(amount) FROM payment
+
+
+
+###
+### GROUP BY
+###
+
+The GROUP BY can be confusing but is most useful.
+
+The GROUP BY clause divides the rows returned from the SELECT statement into groups.
+
+For each group, you can apply an aggregate function, for example calculating the sum of items, count the number of items in the groups.
+
+Basic syntax:
+
+SELECT column_1, aggregate_function(columns_2)
+FROM table_name
+GROUP BY column_1;
+
+
+Group payments by customer_id without applying agregate function.
+
+SELECT customer_id 
+FROM payment
+GROUP BY customer_id
+
+It will act as DISTINCT - it will return the distinct values.
+We get 200 records. Without 14000.
+
+
+Sum amount paid for customers.
+
+SELECT customer_id, SUM(amount)
+FROM payment
+GROUP BY customer_id
+
+It is better to include column we group by in SELECT. Not necessary in PostgreSQL.
+
+
+Sum amount paid for customers and sort by sum amount.
+
+SELECT customer_id, SUM(amount)
+FROM payment
+GROUP BY customer_id
+ORDER BY SUM(amount) DESC
+
+
+Count the number of payments each staff has been processing.
+
+SELECT staff_id, COUNT(payment_id)
+FROM payment
+GROUP BY staff_id
+
+SELECT staff_id, COUNT(*)
+FROM payment
+GROUP BY staff_id
+
+Both work because COUNT counts just records of data - whatever it is - a row of just one value.
+
+
+How many films are there of each rating type - film table.
+
+SELECT rating, COUNT(rating) FROM film
+GROUP BY rating
+
+
+How many counts are there for each rental duration.
+
+SELECT rental_duration, COUNT(rental_duration)
+FROM film
+GROUP BY rental_duration
+
+
+Average rental rate for rating.
+
+SELECT rating, AVG(rental_rate)
+FROM film
+GROUP BY rating
+
+
+###
+### HAVING
+###
+
+We often use the HAVING clause in conjunction with the GROUP BY clause to filter group rows that do not satisfy a specified condition.
+
+It is like a WHERE statement except used with a GROUP BY statement.
+
+SELECT column_1, aggregate_function(column_2)
+FROM table_name
+GROUP BY column_1
+HAVING condition
+
+The HAVING clause sets the condition for group rows created by the GROUP BY clause AFTER the GROUP BY clause applies while the WHERE clause sets the condition for individual rows BEFORE GROUP BY clause applies.
+
+This is the main difference between the HAVING and WHERE clauses.
+
+
+Get payments grouped by value and only ones who have been spent in total more than 200.
+
+SELECT customer_id, SUM(amount)
+FROM payment
+GROUP BY customer_id
+HAVING SUM(amount) > 200
+
+
+Count customers per store (customer table, store_id column) and select these with more than 300 customers.
+
+SELECT store_id, COUNT(customer_id)
+FROM customer
+GROUP BY store_id
+HAVING COUNT(customer_id) > 300
+
+
+Use WHERE and HAVING - film table, rental_rate column - I am interested only in R, G and PG ratings.
+
+SELECT rating, rental_rate
+FROM film
+WHERE rating IN ('R', 'G', 'PG')
+
+This returns films with this ratings.
+
+SELECT rating, rental_rate
+FROM film
+WHERE rating IN ('R', 'G', 'PG')
+GROUP BY rating
+
+This returns average value for group.
+
+Now we can filter on average rantal rate.
+
+SELECT rating, AVG(rental_rate)
+FROM film
+WHERE rating IN ('R', 'G', 'PG')
+GROUP BY rating
+HAVING AVG(rental_rate) < 3
+
+HAVING here filters already filtered and grouped values by AVR.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
